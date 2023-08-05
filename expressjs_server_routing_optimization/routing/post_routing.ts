@@ -1,6 +1,8 @@
 import express from 'express';
 import appLogger from '../src/app_logger/app_logger';
 import bcrypt from 'bcrypt';
+import { body, ExpressValidator, validationResult } from 'express-validator';
+
 
 const postRouting = express.Router()
 
@@ -35,7 +37,10 @@ postRouting.post("/login", (request: express.Request, response: express.Response
 
 })
 
-postRouting.post("/create/newUser", async (request: express.Request, response: express.Response) => {
+postRouting.post("/create/newUser", [
+    body('name').notEmpty().withMessage("Name can not be empty"),
+    body('email').notEmpty().isEmail().withMessage("Required field must not be empty")
+], async (request: express.Request, response: express.Response) => {
 
     //to encrypt password
 
@@ -46,12 +51,24 @@ postRouting.post("/create/newUser", async (request: express.Request, response: e
     let salt = await bcrypt.genSalt()
     let encryptPass = await bcrypt.hash(password, salt)
 
-    response.status(200).json({
-        "message": "Welcome to the app!",
-        "data": request.body,
-        "encryptPass": encryptPass
 
-    })
+
+    let error = validationResult(request)
+
+    if (!error.isEmpty()) {
+        response.status(400).json({
+            "status": request.statusCode,
+            "error": error
+        })
+    }
+    else {
+        response.status(200).json({
+            "message": "Welcome to the app!",
+            "data": request.body,
+            "encryptPass": encryptPass
+
+        })
+    }
 
     console.log(encryptPass);
 })
