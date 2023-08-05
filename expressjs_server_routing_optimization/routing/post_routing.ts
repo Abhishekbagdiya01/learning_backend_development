@@ -1,5 +1,6 @@
 import express from 'express';
 import appLogger from '../src/app_logger/app_logger';
+import bcrypt from 'bcrypt';
 
 const postRouting = express.Router()
 
@@ -15,6 +16,7 @@ postRouting.post("/login", (request: express.Request, response: express.Response
     // response.status(200).json(body)
 
     let { name, email } = request.body
+
     if (name == "abhishek" && email == "abhishek@gmail.com") {
         response.status(200).json({
             "message": "Welcome to the app!",
@@ -33,4 +35,24 @@ postRouting.post("/login", (request: express.Request, response: express.Response
 
 })
 
+postRouting.post("/create/newUser", async (request: express.Request, response: express.Response) => {
+
+    //to encrypt password
+
+
+    let { name, email, password } = request.body
+
+
+    let salt = await bcrypt.genSalt()
+    let encryptPass = await bcrypt.hash(password, salt)
+
+    response.status(200).json({
+        "message": "Welcome to the app!",
+        "data": request.body,
+        "encryptPass": encryptPass
+
+    })
+
+    console.log(encryptPass);
+})
 export default postRouting
