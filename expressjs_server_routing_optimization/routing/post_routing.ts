@@ -1,4 +1,5 @@
 import express from 'express';
+import appLogger from '../src/app_logger/app_logger';
 
 const postRouting = express.Router()
 

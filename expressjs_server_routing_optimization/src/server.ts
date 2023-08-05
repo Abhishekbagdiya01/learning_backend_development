@@ -1,10 +1,12 @@
 import express from "express";
 import userRouting from "../routing/user_routing";
 import postRouting from "../routing/post_routing";
-
+import appLogger from "./app_logger/app_logger";
 
 const app: express.Application = express()
 app.use(express.json())  // for accepting the json response
+app.use(appLogger)
+
 
 // for app routing
 app.use("/v1/user", userRouting)
